@@ -161,7 +161,7 @@ class UserProfile extends React.Component{
         if(this.state.status === "done") {
             return (
 
-                <div className="col-xs-4">
+                <div>
                     <img className="profile_pic" src={this.state.profile_pic}></img>
                     <br></br>
                     <h1>
@@ -174,7 +174,7 @@ class UserProfile extends React.Component{
                     <br></br>
                     Email: {this.state.email}
                     <br></br>
-                    Bio: {this.state.bio === '' ? "Nothing yet 😞" : this.state.bio}
+                    Bio: {this.state.bio === '' ? "Nothing yet ..." : this.state.bio}
 
                 </div>
 
@@ -254,7 +254,6 @@ class f1 extends React.Component{
                             console.log(i);
                             return <div>{i.firstname} {i.lastname}<br></br></div>;
                         }) }</ul>
-                        <Link to="/createAcc">Join the revolution today</Link>
                     </div> :
                     <div>
                         <h1>Welcome!</h1>
