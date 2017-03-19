@@ -32,7 +32,7 @@ class NewsFeed extends React.Component {
         super();
 
         this.state = {
-            posts: null,
+            posts: [],
             search: false,
             data: []
         };
@@ -55,7 +55,7 @@ class NewsFeed extends React.Component {
         const posts = await response.json();
 
         console.log(posts);
-        this.setState({posts: posts});
+        this.setState({posts:posts});
 
         console.log("POSTS", this.state.posts);
 
@@ -89,14 +89,33 @@ class NewsFeed extends React.Component {
 
     }
 
+    async follow(userId, name) {
+        console.log('Following', userId);
+        var follow="https://helloworldapi.herokuapp.com/profiles/follow/userpid=";
+        follow=follow+JSON.stringify(userId)+"/";
+        var response2 = await fetch(follow, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + token
+            }
+        });
+        const data2 = await response2.json();
+        console.log(JSON.stringify(data2));
+        alert("You are now following "+name);
+    }
+
 
     render() {
         if (this.state.search) {
             return (
                 <div>
-                    <ul>{ this.state.data.map(function (i) {
-                        console.log(i);
-                        return <div>{i.first_name} {i.last_name}{i.username}<br></br></div>;
+                    <ul>{ this.state.data.map((i) => {
+                        console.log(this, i);
+                        return <div key={i.id}>
+                            {i.first_name} {i.last_name} {i.username}<br></br>
+                            <a onClick={this.follow(i.id, i.first_name)}>Follow</a>
+                        </div>;
                     }) }</ul>
                     <Link to="/createAcc">Join the revolution today</Link>
                 </div>
@@ -117,6 +136,7 @@ class NewsFeed extends React.Component {
                         </div>
                         <Link to="/profile">Link</Link>
                         <form id="search" onSubmit={this.search.bind(this)}>
+                            <h1>Search By Name</h1>
                             <br></br>
                             <input id="search" ref="search" type="text" placeholder="Search"/>
                             <button>Search</button>
