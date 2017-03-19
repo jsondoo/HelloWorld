@@ -12,9 +12,13 @@ import 'whatwg-fetch';
 // const testApi = "http://api.open-notify.org/iss-now.json";
 const url = "https://helloworldapi.herokuapp.com/token-auth/";
 var name = null;
-
+var token;
 
 export default class Login extends React.Component{
+
+    getToken(){
+        return token;
+    }
 
 
     async submit(event) {
@@ -37,11 +41,12 @@ export default class Login extends React.Component{
 
         const data = await response.json();
 
-        console.log(data);
+        token = data.token;
 
-        if(data.token) {
-
-            this.token = data.token;
+        if(token) {
+            //
+            // token = data.token;
+            console.log(token);
 
         }else{
             alert("Incorrect user or password");
