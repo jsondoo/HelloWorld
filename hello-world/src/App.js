@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import logo from './logo.svg';
+import logo from './logo.png';
 import male_img from './male.png';
 import female_img from './female.jpeg';
 import Post from './Post';
@@ -471,6 +471,7 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-header">
+            <img src={logo} ></img>
           <Router>
               <div>
                 <Route exact path="/" component={Login} />
