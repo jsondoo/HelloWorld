@@ -6,8 +6,6 @@ import female_img from './female.jpeg';
 import Post from './Post';
 import './App.css';
 
-// import getRequest from './HTTPHandler.js';
-//import Login from './login.jsx';
 import 'whatwg-fetch';
 
 const url = "https://helloworldapi.herokuapp.com/token-auth/";
