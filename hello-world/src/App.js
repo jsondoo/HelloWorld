@@ -11,9 +11,11 @@ import './App.css';
 import 'whatwg-fetch';
 
 const url = "https://helloworldapi.herokuapp.com/token-auth/";
-const getUrl  = "https://helloworldapi.herokuapp.com/profiles/search/userpids=12/";
+const getUrl  = "https://helloworldapi.herokuapp.com/profiles/search/name=";
 const feedUrl = "https://helloworldapi.herokuapp.com/posts/newsfeed/";
 const postsUrl = "";
+const userurl="https://helloworldapi.herokuapp.com/users/add/";
+const profurl="https://helloworldapi.herokuapp.com/profiles/add/";
 var token = null;
 var user = null;
 
@@ -44,7 +46,7 @@ class NewsFeed extends React.Component{
         const posts = await response.json();
 
         console.log(posts);
-        this.setState({posts:posts});
+        this.setState({posts: posts.length < 1 ? {none:true} : posts});
 
         console.log("POSTS",this.state.posts);
 
@@ -96,7 +98,7 @@ class UserProfile extends React.Component{
 
 
         console.log(token);
-        const response = await fetch(getUrl, {
+        const response = await fetch(getUrl + user + '/', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -252,6 +254,7 @@ class Login extends React.Component{
                         <br></br>
                         <button>Log In</button>
                     </form>
+                    <Link to="/createAcc">Join the revolution today</Link>
                 </div> :
                 <div>
                     <h1>Welcome!</h1>
@@ -259,6 +262,119 @@ class Login extends React.Component{
                     <br></br>
                     <Link to="/news">Go to your news feed</Link>
                 </div>
+        );
+
+
+    }
+
+
+}
+
+class createAcc extends React.Component{
+
+    constructor(){
+
+        super();
+        this.state = {
+            loggedIn:false,
+            token:null
+        }
+    }
+
+
+    async submitacc(event) {
+        event.preventDefault();
+        console.log("Launched");
+        const { username: { value: username }, password: { value: password }, first_name: { value: first_name },
+            last_name: { value: last_name }, email : { value: email }} = this.refs;
+
+        const response = await fetch(userurl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username,
+                password,
+                first_name,
+                last_name,
+                email
+            })
+        });
+
+
+        const data = await response.json();
+        if(!data.hasOwnProperty("id")){
+            alert("Username already exists in system");
+            return;
+        }
+        var id=data.id;
+        console.log(JSON.stringify(id));
+        console.log(JSON.stringify(data));
+        const response2 = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                username,
+                password
+            })
+        });
+
+        const data2 = await response2.json();
+        token = data2.token;
+        console.log(JSON.stringify(token));
+        console.log(JSON.stringify(data2));
+
+        const response3 = await fetch(profurl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': "Token " + token
+            },
+            body: JSON.stringify({
+                "user": id
+            })
+        });
+
+        const data3 = await response3.json();
+        console.log(JSON.stringify(data3));
+        this.setState({
+            loggerIn:true,
+            token:token
+        });
+
+        user = username;
+
+
+    }
+
+    render() {
+
+        return(
+            !this.state.token ?
+                <div>
+                    <form id="create" onSubmit={this.submitacc.bind(this)}>
+                        <h1>Create Account</h1>
+                        <br></br>
+                        <input id="username" ref="username" type="text" placeholder="Username"/>
+                        <br></br>
+                        <input id="password" ref="password" type="password" placeholder="Password"/>
+                        <br></br>
+                        <input id="first_name" ref="first_name" type="text" placeholder="First name"/>
+                        <br></br>
+                        <input id="last_name" ref="last_name" type="text" placeholder="Last Name"/>
+                        <br></br>
+                        <input id="email" ref="email" type="email" placeholder="Email"/>
+                        <br></br>
+                        <button>Create Account</button>
+                    </form>
+                </div> : <div>
+                    <h1>Welcome to the Revolution!</h1>
+                    <Link to="/profile">Go to your news feed</Link>
+                </div>
+
         );
 
 
@@ -277,6 +393,7 @@ class App extends Component {
                 <Route exact path="/" component={Login} />
                 <Route path="/news" component={NewsFeed} />
                 <Route path="/profile" component={UserProfile}/>
+                <Route path="/createAcc" component={createAcc}/>
               </div>
           </Router>
         </div>
