@@ -3,41 +3,69 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import logo from './logo.svg';
 import male_img from './male.png';
 import female_img from './female.jpeg';
+import Post from './Post';
 import './App.css';
+
 // import getRequest from './HTTPHandler.js';
 //import Login from './login.jsx';
 import 'whatwg-fetch';
 
 const url = "https://helloworldapi.herokuapp.com/token-auth/";
-const getUrl = "https://helloworldapi.herokuapp.com/profiles/search/userpids=12/";
+const getUrl  = "https://helloworldapi.herokuapp.com/profiles/search/userpids=12/";
+const feedUrl = "https://helloworldapi.herokuapp.com/posts/newsfeed/";
+const postsUrl = "";
 var token = null;
-var name = null;
+var user = null;
 
 class NewsFeed extends React.Component{
 
 
-    async getNewsFeed(){
-
-
-
-
-    }
-
     constructor(){
 
         super();
-        this.state = {};
 
+        this.state = {posts:null};
         this.getNewsFeed();
+
+    }
+
+    async getNewsFeed(){
+
+        console.log(token,user);
+
+        const response = await fetch(feedUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + token
+            }
+        })
+
+        const posts = await response.json();
+
+        console.log(posts);
+        this.setState({posts:posts});
+
+        console.log("POSTS",this.state.posts);
 
     }
 
     render(){
 
         return(
+            this.state.posts ?
             <div>
-
+                <h1>News Feed</h1>
+                <div id="posts">
+                    <ul>
+                        {this.state.posts.map((post)=>{
+                            return <Post post={post}/>
+                        })}
+                    </ul>
+                </div>
+                <Link to="/profile">Link</Link>
             </div>
+                : <p>Loading...</p>
         );
     }
 }
@@ -67,6 +95,7 @@ class UserProfile extends React.Component{
     async getUser(){
 
 
+        console.log(token);
         const response = await fetch(getUrl, {
             method: 'GET',
             headers: {
@@ -77,14 +106,29 @@ class UserProfile extends React.Component{
 
         const resp = await response.json();
         const data = resp[0];
-        console.log(data);
-
+        console.log(resp);
         var pic;
         if(data.gender === "F"){
             pic = female_img;
         }else{
             pic = male_img;
         }
+
+        console.log(token,user);
+
+        // CHANGE TO USER'S POSTS
+        const response2 = await fetch(feedUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + token
+            }
+        })
+
+        const resp2 = await response2.json();
+        const posts = resp2;
+
+        console.log(posts);
 
 
         var state={ status:"done",
@@ -95,12 +139,13 @@ class UserProfile extends React.Component{
                     bio:data.bio,
                     followers:data.followers.length,
                     following:data.followings.length,
-                    profile_pic:pic
+                    profile_pic:pic,
+                    posts:posts
         };
 
         this.setState(state);
 
-        console.log(this.state);
+        // console.log(this.state);
     }
 
     render(){
@@ -120,11 +165,21 @@ class UserProfile extends React.Component{
                     Following: {this.state.following}
                     <br></br>
                     Bio: {this.state.bio === '' ? "Nothing yet :(" : this.state.bio}
-
+                    <div id="posts">
+                        <h2>Posts</h2>
+                        <ul>
+                            {this.state.posts.map((post)=>{
+                                return <Post post={post}/>
+                            })}
+                        </ul>
+                    </div>
                 </div>
             );
         }else{
-            return <div>Loading...</div>
+            return <div>{token ?
+                "Loading..." :
+                ("You are not logged in!"
+                )}</div>
         }
     }
 
@@ -168,14 +223,17 @@ class Login extends React.Component{
         token = data.token;
 
         if(token) {
-            console.log(token);
+
+            user = username;
+            console.log(user);
+            // console.log(token);
             this.setState({
                 loggerIn:true,
                 token:token
             });
 
         }else{
-            alert("Incorrect user or password");
+            alert("Incorrect username or password");
         }
 
     }
@@ -193,13 +251,13 @@ class Login extends React.Component{
                         <input id="password" ref="password" type="password" placeholder="Password"/>
                         <br></br>
                         <button>Log In</button>
-
-
                     </form>
                 </div> :
                 <div>
                     <h1>Welcome!</h1>
-                    <Link to="/profile">Go to your news feed</Link>
+                    <Link to="/profile">Go to your profile</Link>
+                    <br></br>
+                    <Link to="/news">Go to your news feed</Link>
                 </div>
         );
 
