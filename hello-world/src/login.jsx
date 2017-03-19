@@ -16,10 +16,18 @@ var token;
 
 export default class Login extends React.Component{
 
-    getToken(){
-        return token;
+    constructor(){
+
+        super();
+        this.state = {
+            loggedIn:false,
+            token:null
+        }
     }
 
+    getToken(){
+        return this.token;
+    }
 
     async submit(event) {
         event.preventDefault();
@@ -44,9 +52,11 @@ export default class Login extends React.Component{
         token = data.token;
 
         if(token) {
-            //
-            // token = data.token;
             console.log(token);
+            this.setState({
+                loggerIn:true,
+                token:token
+            });
 
         }else{
             alert("Incorrect user or password");
@@ -68,7 +78,7 @@ export default class Login extends React.Component{
                     <br></br>
                     <button>Log In</button>
 
-                    <Link to="/hello">Log In</Link>
+                    <Link to="/profile">Log In</Link>
 
                 </form>
             </div> :
