@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import logo from './logo.svg';
+import male_img from './male.png';
+import female_img from './female.jpeg';
 import './App.css';
 // import getRequest from './HTTPHandler.js';
 import Login from './login.jsx';
@@ -11,11 +13,26 @@ const getUrl = "https://helloworldapi.herokuapp.com/profiles/search/userpids=1/"
 var token = null;
 var name = null;
 
-const NewsFeed = (props) => (
-    <div>
-        Hello NewsFeed.
-    </div>
-);
+class NewsFeed extends React.Component{
+
+
+    constructor(){
+
+        super();
+        this.state = {};
+
+
+    }
+
+    render(){
+
+        return(
+            <div>
+
+            </div>
+        );
+    }
+}
 
 class UserProfile extends React.Component{
 
@@ -24,7 +41,15 @@ class UserProfile extends React.Component{
 
         super();
 
-        this.state = {status:null,first:null, last:null, bday:null};
+        this.state = {  status:null,
+                        first:null,
+                        last:null,
+                        birthday:null,
+                        gender:null,
+                        bio:"",
+                        followers:[],
+                        following:[]
+                        };
 
         this.getUser();
 
@@ -41,10 +66,28 @@ class UserProfile extends React.Component{
             }
         })
 
-        const data = await response.json();
+        const resp = await response.json();
+        const data = resp[0];
         console.log(data);
 
-        var state={status:"done",first:data[0].first_name, last:data[0].last_name,bday:data[0].birth_date};
+        var pic;
+        if(data.gender === "F"){
+            pic = female_img;
+        }else{
+            pic = male_img;
+        }
+
+
+        var state={ status:"done",
+                    first:data.first_name,
+                    last:data.last_name,
+                    birthday:data.birth_date,
+                    gender:data.gender,
+                    bio:data.bio,
+                    followers:data.followers.length,
+                    following:data.followings.length,
+                    profile_pic:pic
+        };
 
         this.setState(state);
 
@@ -54,11 +97,26 @@ class UserProfile extends React.Component{
     render(){
 
 
-        return(
-            <div className="col-xs-4">
-                Name: {this.state.first} {this.state.last} {this.state.bday}
-            </div>
-        );
+        if(this.state.status === "done") {
+            return (
+                <div className="col-xs-4">
+                    <img className="profile_pic" src={this.state.profile_pic}></img>
+                    <br></br>
+                    <h1>
+                    {this.state.first} {this.state.last} {this.state.bday}
+                    </h1>
+                    <br></br>
+                    Followers: {this.state.followers}
+                    <br></br>
+                    Following: {this.state.following}
+                    <br></br>
+                    Bio: {this.state.bio}
+
+                </div>
+            );
+        }else{
+            return <div>Loading...</div>
+        }
     }
 
 };
