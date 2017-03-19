@@ -15,6 +15,8 @@ const postsUrl = "";
 const userurl="https://helloworldapi.herokuapp.com/users/add/";
 const profurl="https://helloworldapi.herokuapp.com/profiles/add/";
 const getUrl2 = "https://helloworldapi.herokuapp.com/users/fetchdetails/";
+var searchurl="https://helloworldapi.herokuapp.com/profiles/search/name=";
+
 var furl="https://helloworldapi.herokuapp.com/profiles/search/userpids=";
 const getselfposts="https://helloworldapi.herokuapp.com/posts/search/username="; // TODO
 var followers=[];
@@ -22,21 +24,25 @@ var pfollowers=[];
 var token = null;
 var user = null;
 
-class NewsFeed extends React.Component{
+class NewsFeed extends React.Component {
 
 
-    constructor(){
+    constructor() {
 
         super();
 
-        this.state = {posts:null};
+        this.state = {
+            posts: null,
+            search: false,
+            data: []
+        };
         this.getNewsFeed();
 
     }
 
-    async getNewsFeed(){
+    async getNewsFeed() {
 
-        console.log(token,user);
+        console.log(token, user);
 
         const response = await fetch(feedUrl, {
             method: 'GET',
@@ -44,34 +50,82 @@ class NewsFeed extends React.Component{
                 'Content-Type': 'application/json',
                 'Authorization': 'Token ' + token
             }
-        })
+        });
 
         const posts = await response.json();
 
         console.log(posts);
         this.setState({posts: posts});
 
-        console.log("POSTS",this.state.posts);
+        console.log("POSTS", this.state.posts);
 
     }
 
-    render(){
+    async search(event) {
+        event.preventDefault();
+        console.log("In search");
 
-        return(
-            this.state.posts ?
-            <div>
-                <h1>News Feed</h1>
-                <div id="posts">
-                    <ul>
-                        {this.state.posts.map((post)=>{
-                            return <Post post={post}/>
-                        })}
-                    </ul>
+        const {search : {value: search}} = this.refs;
+        var surl = searchurl;
+        surl = surl + search + "/";
+        console.log(surl);
+        const response = await fetch(surl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + token
+            }
+        });
+
+
+        const data2 = await response.json();
+        console.log(JSON.stringify(data2));
+
+        this.setState({
+            search: true,
+            data: data2
+        });
+
+
+    }
+
+
+    render() {
+        if (this.state.search) {
+            return (
+                <div>
+                    <ul>{ this.state.data.map(function (i) {
+                        console.log(i);
+                        return <div>{i.first_name} {i.last_name}{i.username}<br></br></div>;
+                    }) }</ul>
+                    <Link to="/createAcc">Join the revolution today</Link>
                 </div>
-                <Link to="/profile">Link</Link>
-            </div>
-                : <p>Loading...</p>
-        );
+            );
+        }
+        else {
+
+            return (
+                this.state.posts ?
+                    <div>
+                        <h1>News Feed</h1>
+                        <div id="posts">
+                            <ul>
+                                {this.state.posts.map((post)=> {
+                                    return <Post post={post}/>
+                                })}
+                            </ul>
+                        </div>
+                        <Link to="/profile">Link</Link>
+                        <form id="search" onSubmit={this.search.bind(this)}>
+                            <br></br>
+                            <input id="search" ref="search" type="text" placeholder="Search"/>
+                            <button>Search</button>
+                        </form>
+                    </div>
+                    : <p>Loading...</p>
+            );
+
+        }
     }
 }
 
