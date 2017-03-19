@@ -3,75 +3,49 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import logo from './logo.svg';
 import male_img from './male.png';
 import female_img from './female.jpeg';
-import Post from './Post';
-import './App.css';
 
+import './App.css';
 // import getRequest from './HTTPHandler.js';
 //import Login from './login.jsx';
 import 'whatwg-fetch';
 
+
 const url = "https://helloworldapi.herokuapp.com/token-auth/";
-const getUrl  = "https://helloworldapi.herokuapp.com/profiles/search/name=";
-const feedUrl = "https://helloworldapi.herokuapp.com/posts/newsfeed/";
-const postsUrl = "";
 const userurl="https://helloworldapi.herokuapp.com/users/add/";
 const profurl="https://helloworldapi.herokuapp.com/profiles/add/";
+const getUrl = "https://helloworldapi.herokuapp.com/profiles/fetchdetails/";
 const getUrl2 = "https://helloworldapi.herokuapp.com/users/fetchdetails/";
 var furl="https://helloworldapi.herokuapp.com/profiles/search/userpids=";
+var token = null;
+var name = null;
 var followers=[];
 var pfollowers=[];
-var token = null;
-var user = null;
 
 class NewsFeed extends React.Component{
 
 
-    constructor(){
+    async getNewsFeed(){
 
-        super();
 
-        this.state = {posts:null};
-        this.getNewsFeed();
+
 
     }
 
-    async getNewsFeed(){
+    constructor(){
 
-        console.log(token,user);
+        super();
+        this.state = {};
 
-        const response = await fetch(feedUrl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + token
-            }
-        })
-
-        const posts = await response.json();
-
-        console.log(posts);
-        this.setState({posts: posts.length < 1 ? {none:true} : posts});
-
-        console.log("POSTS",this.state.posts);
+        this.getNewsFeed();
 
     }
 
     render(){
 
         return(
-            this.state.posts ?
             <div>
-                <h1>News Feed</h1>
-                <div id="posts">
-                    <ul>
-                        {this.state.posts.map((post)=>{
-                            return <Post post={post}/>
-                        })}
-                    </ul>
-                </div>
-                <Link to="/profile">Link</Link>
+
             </div>
-                : <p>Loading...</p>
         );
     }
 }
@@ -102,7 +76,7 @@ class UserProfile extends React.Component{
 
     async getUser(){
         console.log(name);
-        const response = await fetch(getUrl + user + '/', {
+        const response = await fetch(getUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -117,21 +91,17 @@ class UserProfile extends React.Component{
             }
         });
 
-        var resp = await response.json();
+        const resp = await response.json();
         const resp2=await response2.json();
-        console.log(resp);
-        // console.log(JSON.stringify(resp));
-        // console.log(JSON.stringify(resp2));
+        console.log(JSON.stringify(resp));
+        console.log(JSON.stringify(resp2));
 
-        resp = resp[0];
         var pic;
         if(resp.gender === "F"){
             pic = female_img;
         }else{
             pic = male_img;
         }
-
-        console.log("RESP",resp)
 
 
         var state={ status:"done",
@@ -171,7 +141,7 @@ class UserProfile extends React.Component{
                     <br></br>
                     Followers: {this.state.followers}
                     <br></br>
-                    <Link to="/f1">Following: </Link> {this.state.following}
+                    <Link to="/f1">Followers</Link> {this.state.following}
                     <br></br>
                     Email: {this.state.email}
                     <br></br>
@@ -184,89 +154,6 @@ class UserProfile extends React.Component{
             return <div>Loading...</div>
         }
     }
-
-};
-
-class f1 extends React.Component{
-
-    constructor(){
-        pfollowers=[];
-        super();
-        this.state = {
-            done:false,
-        }
-        this.submit2(this);
-    }
-
-
-
-    async submit2(event) {
-        var cfurl=furl;
-        for(var i=0;i<followers.length-1;i++){
-            cfurl=cfurl+JSON.stringify(followers[i])+",";
-            console.log(furl);
-        }
-        cfurl=cfurl+JSON.stringify(followers[followers.length-1])+"/";
-        console.log(furl);
-
-        const response = await fetch(cfurl, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Token ' + token
-            }
-        });
-
-        const data = await response.json();
-        console.log(JSON.stringify(data));
-
-        for (var i=0;i<data.length;i++){
-            var obj=data[i];
-            var h={};
-            h.username=obj.username;
-            h.firstname=obj.first_name;
-            h.lastname=obj.last_name;
-            pfollowers.push(h);
-        }
-
-        this.setState({
-            done:true
-        });
-
-        // console.log(JSON.stringify(pfollowers));
-
-    }
-
-    render() {
-
-        if(followers.length==0){
-            return (
-                <div>
-                    <h1>Get a life!</h1>
-                    <Link to="/profile">Go to your news feed</Link>
-                </div>
-            );
-        }
-        else {
-            return (
-                this.state.done ?
-                    <div>
-                        <ul>{ pfollowers.map(function (i) {
-                            console.log(i);
-                            return <div>{i.firstname} {i.lastname}<br></br></div>;
-                        }) }</ul>
-                        <Link to="/createAcc">Join the revolution today</Link>
-                    </div> :
-                    <div>
-                        <h1>Welcome!</h1>
-                        <Link to="/profile">Go to your news feed</Link>
-                    </div>
-            );
-        }
-
-
-    }
-
 
 };
 
@@ -308,17 +195,14 @@ class Login extends React.Component{
         token = data.token;
 
         if(token) {
-
-            user = username;
-            console.log(user);
-            // console.log(token);
+            console.log(token);
             this.setState({
                 loggerIn:true,
                 token:token
             });
 
         }else{
-            alert("Incorrect username or password");
+            alert("Incorrect user or password");
         }
 
     }
@@ -341,9 +225,7 @@ class Login extends React.Component{
                 </div> :
                 <div>
                     <h1>Welcome!</h1>
-                    <Link to="/profile">Go to your profile</Link>
-                    <br></br>
-                    <Link to="/news">Go to your news feed</Link>
+                    <Link to="/profile">Go to your news feed</Link>
                 </div>
         );
 
@@ -353,6 +235,93 @@ class Login extends React.Component{
 
 }
 
+class f1 extends React.Component{
+
+    constructor(){
+        pfollowers=[];
+        super();
+        this.state = {
+            done:false,
+        }
+        this.submit2(this);
+    }
+
+    getToken(){
+        return this.token;
+    }
+
+
+
+    async submit2(event) {
+        var cfurl=furl;
+        for(var i=0;i<followers.length-1;i++){
+            cfurl=cfurl+JSON.stringify(followers[i])+",";
+            console.log(furl);
+        }
+        cfurl=cfurl+JSON.stringify(followers[followers.length-1])+"/";
+        console.log(furl);
+
+        const response = await fetch(cfurl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + token
+            }
+        });
+
+
+
+
+        const data = await response.json();
+        console.log(JSON.stringify(data));
+
+        for (var i=0;i<data.length;i++){
+            var obj=data[i];
+            var h={};
+            h.username=obj.username;
+            h.firstname=obj.first_name;
+            h.lastname=obj.last_name;
+            pfollowers.push(h);
+        }
+
+        this.setState({
+            done:true
+        });
+
+        console.log(JSON.stringify(pfollowers));
+
+    }
+
+    render() {
+        if(followers.length==0){
+            return (
+                <div>
+                    <h1>Get a life!</h1>
+                    <Link to="/profile">Go to your news feed</Link>
+                </div>
+            );
+        }
+        else {
+            return (
+                this.state.done ?
+                    <div>
+                        <ul>{ pfollowers.map(function (i) {
+                            return <li>{JSON.stringify(i)}</li>;
+                        }) }</ul>
+                        <Link to="/createAcc">Join the revolution today</Link>
+                    </div> :
+                    <div>
+                        <h1>Welcome!</h1>
+                        <Link to="/profile">Go to your news feed</Link>
+                    </div>
+            );
+        }
+
+
+    }
+
+
+}
 class createAcc extends React.Component{
 
     constructor(){
@@ -407,6 +376,7 @@ class createAcc extends React.Component{
 
         const data2 = await response2.json();
         token = data2.token;
+        name=data2.username;
         console.log(JSON.stringify(token));
         console.log(JSON.stringify(data2));
 
@@ -427,8 +397,6 @@ class createAcc extends React.Component{
             loggerIn:true,
             token:token
         });
-
-        user = username;
 
 
     }
@@ -465,25 +433,24 @@ class createAcc extends React.Component{
 
 
 }
-
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <div className="App-header">
-          <Router>
-              <div>
-                <Route exact path="/" component={Login} />
-                <Route path="/news" component={NewsFeed} />
-                <Route path="/profile" component={UserProfile}/>
-                <Route path="/createAcc" component={createAcc}/>
-                <Route path="/f1" component={f1}/>
-              </div>
-          </Router>
-        </div>
-      </div>
-    );
-  }
+    render() {
+        return (
+            <div className="App">
+                <div className="App-header">
+                    <Router>
+                        <div>
+                            <Route exact path="/" component={Login} />
+                            <Route path="/news" component={NewsFeed} />
+                            <Route path="/profile" component={UserProfile}/>
+                            <Route path="/createAcc" component={createAcc}/>
+                            <Route path="/f1" component={f1}/>
+                        </div>
+                    </Router>
+                </div>
+            </div>
+        );
+    }
 }
 
 export default App;

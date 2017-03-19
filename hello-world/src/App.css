@@ -31,6 +31,10 @@ html {
   background-color: crimson;
 }
 
+a {
+  color: deepskyblue;
+}
+
 .profile_pic {
 
   border-radius: 100%;
