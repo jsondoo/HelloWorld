@@ -149,6 +149,7 @@ class NewsFeed extends React.Component {
     }
 }
 
+
 class UserProfile extends React.Component{
 
 
@@ -164,7 +165,8 @@ class UserProfile extends React.Component{
             bio:"",
             followers:[],
             following:[],
-            email:""
+            email:"",
+            posts:null
         };
 
         this.getUser();
@@ -190,15 +192,26 @@ class UserProfile extends React.Component{
             }
         });
 
+        const postReq = await fetch(getselfposts + user + '/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Token ' + token
+            }
+        });
+
         var resp = await response.json();
         const resp2=await response2.json();
-        console.log(resp);
+        const posts = await postReq.json();
         // console.log(JSON.stringify(resp));
         // console.log(JSON.stringify(resp2));
 
         resp = resp[0];
         var pic;
-        if(resp.gender === "F"){
+        if(resp.img){
+            pic = resp.img;
+        }
+        else if(resp.gender === "F"){
             pic = female_img;
         }else{
             pic = male_img;
@@ -216,7 +229,8 @@ class UserProfile extends React.Component{
             followers:resp.followers.length,
             following:resp.followings.length,
             profile_pic:pic,
-            email:resp2.email
+            email:resp2.email,
+            posts:posts
         };
 
         for(var i=0;i<resp.followings.length;i++){
@@ -230,26 +244,33 @@ class UserProfile extends React.Component{
     }
 
     render(){
-
-
         if(this.state.status === "done") {
             return (
 
-                <div>
-                    <img className="profile_pic" src={this.state.profile_pic}></img>
-                    <br></br>
-                    <h1>
-                        {this.state.first} {this.state.last}
-                    </h1>
-                    <br></br>
-                    Followers: {this.state.followers}
-                    <br></br>
-                    <Link to="/f1">Following: </Link> {this.state.following}
-                    <br></br>
-                    Email: {this.state.email}
-                    <br></br>
-                    Bio: {this.state.bio === '' ? "Nothing yet ..." : this.state.bio}
-
+                <div className="container">
+                    <div className="col-xs-4">
+                        <img className="profile_pic" src={this.state.profile_pic}></img>
+                        <br></br>
+                        <h1>
+                            {this.state.first} {this.state.last}
+                        </h1>
+                        <br></br>
+                        Followers: {this.state.followers}
+                        <br></br>
+                        <Link to="/f1">Following: </Link> {this.state.following}
+                        <br></br>
+                        Email: {this.state.email}
+                        <br></br>
+                        Bio: {this.state.bio === '' ? "Nothing yet ..." : this.state.bio}
+                    </div>
+                    <div id="Posts" className="col-xs-8">
+                        <h2>{this.state.first + "\'s Posts"}</h2>
+                        <ul>
+                            {this.state.posts.map((post)=>{
+                                return <Post post={post}/>
+                            })}
+                        </ul>
+                    </div>
                 </div>
 
             );
@@ -259,7 +280,6 @@ class UserProfile extends React.Component{
     }
 
 };
-
 class f1 extends React.Component{
 
     constructor(){
