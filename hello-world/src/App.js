@@ -5,8 +5,20 @@ import getRequest from './HTTPHandler.js';
 
 class App extends Component {
 
+
+
     submit(event){
-        var url = "http://206.87.157.28:8000/users/";
+
+
+            var cb = function(){
+                if(req.readyState === XMLHttpRequest.DONE && req.status === 200) {
+                    console.log(req.responseText);
+                }
+            }
+
+
+        var testApi = "http://api.open-notify.org/iss-now.json";
+        var url = "https://helloworldapi.herokuapp.com/users/";
 
         event.preventDefault();
         console.log(event, this);
@@ -15,12 +27,14 @@ class App extends Component {
 
         console.log({username:user, password:pass});
 
-        var cb = function(){
-            console.log("WORKS");
-        }
+        // var resp = getRequest(testApi);
+        //
+        // console.log(resp);
 
-        getRequest(url, cb);
-
+        var req = new XMLHttpRequest();
+        req.open("GET", url, true);
+        req.onreadystatechange = cb;
+        req.send();
     }
 
   render() {
