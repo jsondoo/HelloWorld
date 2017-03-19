@@ -114,7 +114,7 @@ class NewsFeed extends React.Component {
                         console.log(this, i);
                         return <div key={i.id}>
                             {i.first_name} {i.last_name} {i.username}<br></br>
-                            <a onClick={this.follow(i.id, i.first_name)}>Follow</a>
+                            <button onDoubleClick={this.follow.bind(this)}>Follow</button>
                         </div>;
                     }) }</ul>
                     <Link to="/createAcc">Join the revolution today</Link>
@@ -136,10 +136,10 @@ class NewsFeed extends React.Component {
                         </div>
                         <Link to="/profile">Link</Link>
                         <form id="search" onSubmit={this.search.bind(this)}>
-                            <h1>Search By Name</h1>
+                            <h1>Follow by Name</h1>
                             <br></br>
-                            <input id="search" ref="search" type="text" placeholder="Search"/>
-                            <button>Search</button>
+                            <input id="search" className="form-control" ref="search" type="text" placeholder="Search"/>
+                            <button className="btn btn-danger btn-block" a>Search</button>
                         </form>
                     </div>
                     : <p>Loading...</p>
@@ -262,6 +262,9 @@ class UserProfile extends React.Component{
                         Email: {this.state.email}
                         <br></br>
                         Bio: {this.state.bio === '' ? "Nothing yet ..." : this.state.bio}
+                        <br></br>
+                        <Link to="/news">Go to your news feed</Link>
+
                     </div>
                     <div id="Posts" className="col-xs-8">
                         <h2>{this.state.first + "\'s Posts"}</h2>
@@ -336,7 +339,7 @@ class f1 extends React.Component{
             return (
                 <div>
                     <h1>Get a life!</h1>
-                    <Link to="/profile">Go to your news feed</Link>
+                    <Link to="/news">Go to your news feed</Link>
                 </div>
             );
         }
@@ -351,7 +354,7 @@ class f1 extends React.Component{
                     </div> :
                     <div>
                         <h1>Welcome!</h1>
-                        <Link to="/profile">Go to your news feed</Link>
+                        <Link to="/news">Go to your news feed</Link>
                     </div>
             );
         }
@@ -422,7 +425,7 @@ class Login extends React.Component{
                 <div id="container" className="container">
                     <div className="col-xs-4"></div>
                     <div className="col-xs-4">
-                    <form id="login" onSubmit={this.submit.bind(this)}>
+                        <form id="login" onSubmit={this.submit.bind(this)}>
                         <h1>Sign In</h1>
                         <br></br>
                         <input id="username" className="form-control" ref="username" type="text" placeholder="Username"/>
@@ -537,7 +540,7 @@ class createAcc extends React.Component{
                 <div className="container">
                     <div className="col-xs-4"></div>
                     <div className="col-xs-4">
-                    <form id="create" onSubmit={this.submitacc.bind(this)}>
+                        <form id="create" onSubmit={this.submitacc.bind(this)}>
                         <h1>Create Account</h1>
 
                         <input id="username" className="form-control" ref="username" type="text" placeholder="Username"/>
