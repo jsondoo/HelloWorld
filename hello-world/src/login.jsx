@@ -1,11 +1,22 @@
-import React from 'react';
+import React, { PropTypes } from 'react'
+import {
+    BrowserRouter as Router,
+    Route,
+    Link,
+    Redirect,
+    withRouter
+} from 'react-router-dom'
 
 import 'whatwg-fetch';
 
 // const testApi = "http://api.open-notify.org/iss-now.json";
 const url = "https://helloworldapi.herokuapp.com/token-auth/";
+var name = null;
+
 
 export default class Login extends React.Component{
+
+
     async submit(event) {
         event.preventDefault();
 
@@ -22,42 +33,26 @@ export default class Login extends React.Component{
             })
         });
 
+        name = {value:username};
+
         const data = await response.json();
 
         console.log(data);
 
+        if(data.token) {
 
+            this.token = data.token;
 
-        // var cb = function(){
-        //     if(req.readyState === XMLHttpRequest.DONE && req.status === 200) {
-        //         console.log(req.responseText);
-        //     }
-        // }
-        //
-        //
+        }else{
+            alert("Incorrect user or password");
+        }
 
-
-        //
-        //
-        // console.log(event, this);
-        // var user = this.refs.username.value;
-        // var pass = this.refs.password.value;
-        //
-        // console.log({username:user, password:pass});
-        //
-        // var resp = getRequest(testApi);
-
-        // console.log(resp);
-        //
-        // var req = new XMLHttpRequest();
-        // req.open("GET", url, true);
-        // req.onreadystatechange = cb;
-        // req.send();
     }
 
-    render(){
+    render() {
 
         return(
+            !this.token ?
             <div>
                 <form id="login" onSubmit={this.submit.bind(this)}>
                     <h1>Sign In</h1>
@@ -67,7 +62,13 @@ export default class Login extends React.Component{
                     <input id="password" ref="password" type="password" placeholder="Password"/>
                     <br></br>
                     <button>Log In</button>
+
+                    <Link to="/hello">Log In</Link>
+
                 </form>
+            </div> :
+            <div>
+                <h1>Welcome!</h1>
             </div>
         );
 
