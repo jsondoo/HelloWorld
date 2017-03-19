@@ -16,6 +16,7 @@ const userurl="https://helloworldapi.herokuapp.com/users/add/";
 const profurl="https://helloworldapi.herokuapp.com/profiles/add/";
 const getUrl2 = "https://helloworldapi.herokuapp.com/users/fetchdetails/";
 var furl="https://helloworldapi.herokuapp.com/profiles/search/userpids=";
+const getselfposts="https://helloworldapi.herokuapp.com/posts/search/username="; // TODO
 var followers=[];
 var pfollowers=[];
 var token = null;
@@ -48,7 +49,7 @@ class NewsFeed extends React.Component{
         const posts = await response.json();
 
         console.log(posts);
-        this.setState({posts: posts.length < 1 ? {none:true} : posts});
+        this.setState({posts: posts});
 
         console.log("POSTS",this.state.posts);
 
@@ -325,17 +326,22 @@ class Login extends React.Component{
 
         return(
             !this.state.token ?
-                <div>
+                <div id="container" className="container">
+                    <div className="col-xs-4"></div>
+                    <div className="col-xs-4">
                     <form id="login" onSubmit={this.submit.bind(this)}>
                         <h1>Sign In</h1>
                         <br></br>
-                        <input id="username" ref="username" type="text" placeholder="Username"/>
+                        <input id="username" className="form-control" ref="username" type="text" placeholder="Username"/>
                         <br></br>
-                        <input id="password" ref="password" type="password" placeholder="Password"/>
+                        <input id="password" className="form-control" ref="password" type="password" placeholder="Password"/>
                         <br></br>
-                        <button>Log In</button>
+                        <br></br>
+                        <button className="btn btn-danger btn-block">Log In</button>
+                        <br></br>
                     </form>
                     <Link to="/createAcc">Join the revolution today</Link>
+                    </div>
                 </div> :
                 <div>
                     <h1>Welcome!</h1>
@@ -435,22 +441,25 @@ class createAcc extends React.Component{
 
         return(
             !this.state.token ?
-                <div>
+                <div className="container">
+                    <div className="col-xs-4"></div>
+                    <div className="col-xs-4">
                     <form id="create" onSubmit={this.submitacc.bind(this)}>
                         <h1>Create Account</h1>
+
+                        <input id="username" className="form-control" ref="username" type="text" placeholder="Username"/>
                         <br></br>
-                        <input id="username" ref="username" type="text" placeholder="Username"/>
+                        <input id="password" className="form-control" ref="password" type="password" placeholder="Password"/>
                         <br></br>
-                        <input id="password" ref="password" type="password" placeholder="Password"/>
+                        <input id="first_name" className="form-control" ref="first_name" type="text" placeholder="First Name"/>
                         <br></br>
-                        <input id="first_name" ref="first_name" type="text" placeholder="First name"/>
+                        <input id="last_name" className="form-control" ref="last_name" type="text" placeholder="Last Name"/>
                         <br></br>
-                        <input id="last_name" ref="last_name" type="text" placeholder="Last Name"/>
+                        <input id="email" className="form-control" ref="email" type="email" placeholder="Email"/>
                         <br></br>
-                        <input id="email" ref="email" type="email" placeholder="Email"/>
-                        <br></br>
-                        <button>Create Account</button>
+                        <button className="btn btn-danger btn-block">Create Account</button>
                     </form>
+                    </div>
                 </div> : <div>
                     <h1>Welcome to the Revolution!</h1>
                     <Link to="/profile">Go to your news feed</Link>
